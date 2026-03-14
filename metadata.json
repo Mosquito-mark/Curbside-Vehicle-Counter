@@ -1,0 +1,7 @@
+{
+  "name": "Street Counter",
+  "description": "A mobile web app to count parked cars and trucks on either side of the street, recording geolocation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

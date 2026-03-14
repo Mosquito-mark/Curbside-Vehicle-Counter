@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: counts
+    // Document ID: auto-generated
+    // Fields:
+    //   - type: string (required, 'car' or 'truck')
+    //   - side: string (required, 'left' or 'right')
+    //   - latitude: number (required)
+    //   - longitude: number (required)
+    //   - accuracy: number (required)
+    //   - timestamp: string (required, ISO 8601 date string)
+    //   - userId: string (required, must match auth.uid)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function uidUnchanged() {
+      return !('userId' in request.resource.data) ||
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return !('userId' in request.resource.data) ||
+        request.resource.data.userId == resource.data.userId;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    function isValidCount(data) {
+      return hasOnlyAllowedFields(['type', 'side', 'latitude', 'longitude', 'accuracy', 'timestamp', 'userId', 'neighborhood', 'purpose', 'sessionDate', 'sessionId']) &&
+             data.type in ['car', 'truck', 'dumpster', 'commercial_truck'] &&
+             data.side in ['left', 'right'] &&
+             data.latitude is number &&
+             data.longitude is number &&
+             data.accuracy is number &&
+             isValidDateString(data.timestamp) &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             (!('neighborhood' in data) || data.neighborhood == null || (data.neighborhood is string && data.neighborhood.size() < 100)) &&
+             (!('purpose' in data) || data.purpose == null || (data.purpose is string && data.purpose.size() < 500)) &&
+             (!('sessionDate' in data) || data.sessionDate == null || isValidDateString(data.sessionDate)) &&
+             (!('sessionId' in data) || data.sessionId == null || (data.sessionId is string && data.sessionId.size() < 100));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /counts/{countId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                    hasRequiredFields(['type', 'side', 'latitude', 'longitude', 'accuracy', 'timestamp', 'userId']) &&
+                    isValidCount(request.resource.data) && 
+                    uidUnchanged();
+      allow update: if isDocOwner() && 
+                    hasRequiredFields(['type', 'side', 'latitude', 'longitude', 'accuracy', 'timestamp', 'userId']) &&
+                    isValidCount(request.resource.data) && 
+                    uidNotModified();
+      allow delete: if isDocOwner();
+    }
+  }
+}

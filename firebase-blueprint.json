@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "VehicleCount": {
+      "title": "Vehicle Count",
+      "description": "A single record of a counted vehicle.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["car", "truck", "dumpster", "commercial_truck"],
+          "description": "The type of vehicle counted."
+        },
+        "side": {
+          "type": "string",
+          "enum": ["left", "right"],
+          "description": "The side of the street the vehicle was on."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The latitude where the count was recorded."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The longitude where the count was recorded."
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "The accuracy of the geolocation in meters."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the count was recorded."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who recorded the count."
+        },
+        "neighborhood": {
+          "type": "string",
+          "description": "The neighborhood where the count was recorded."
+        },
+        "purpose": {
+          "type": "string",
+          "description": "The purpose of the count."
+        },
+        "sessionDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time of the session."
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "The ID of the session."
+        }
+      },
+      "required": ["type", "side", "latitude", "longitude", "accuracy", "timestamp", "userId"]
+    }
+  },
+  "firestore": {
+    "/counts/{countId}": {
+      "schema": {
+        "$ref": "#/entities/VehicleCount"
+      },
+      "description": "Collection of all vehicle counts."
+    }
+  }
+}
