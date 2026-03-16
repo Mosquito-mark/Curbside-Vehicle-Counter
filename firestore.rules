@@ -73,6 +73,17 @@ service cloud.firestore {
              (!('sessionId' in data) || data.sessionId == null || (data.sessionId is string && data.sessionId.size() < 100));
     }
 
+    function isValidSession(data) {
+      return hasOnlyAllowedFields(['sessionId', 'userId', 'startTime', 'endTime', 'neighborhood', 'purpose', 'totalCounts']) &&
+             data.sessionId is string && data.sessionId.size() > 0 && data.sessionId.size() < 100 &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             isValidDateString(data.startTime) &&
+             isValidDateString(data.endTime) &&
+             data.totalCounts is number && data.totalCounts >= 0 &&
+             (!('neighborhood' in data) || data.neighborhood == null || (data.neighborhood is string && data.neighborhood.size() < 100)) &&
+             (!('purpose' in data) || data.purpose == null || (data.purpose is string && data.purpose.size() < 500));
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -86,6 +97,19 @@ service cloud.firestore {
       allow update: if isDocOwner() && 
                     hasRequiredFields(['type', 'side', 'latitude', 'longitude', 'accuracy', 'timestamp', 'userId']) &&
                     isValidCount(request.resource.data) && 
+                    uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                    hasRequiredFields(['sessionId', 'userId', 'startTime', 'endTime', 'totalCounts']) &&
+                    isValidSession(request.resource.data) &&
+                    uidUnchanged();
+      allow update: if isDocOwner() &&
+                    hasRequiredFields(['sessionId', 'userId', 'startTime', 'endTime', 'totalCounts']) &&
+                    isValidSession(request.resource.data) &&
                     uidNotModified();
       allow delete: if isDocOwner();
     }

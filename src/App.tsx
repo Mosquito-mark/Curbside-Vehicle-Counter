@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { collection, addDoc, query, where, onSnapshot, orderBy, writeBatch, doc } from 'firebase/firestore';
+import { collection, addDoc, query, where, onSnapshot, orderBy, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { auth, db, loginWithGoogle, logout } from './firebase';
 import { Car, Truck, MapPin, MapPinOff, LogIn, LogOut, AlertCircle, Trash2, Package, Download, Mail } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -229,6 +229,12 @@ export default function App() {
   });
   const [purpose, setPurpose] = useState('');
   const [sessionDate, setSessionDate] = useState<Date | null>(new Date());
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [isViewingSessionsList, setIsViewingSessionsList] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !!params.get('review');
+  });
+  const [sessionsList, setSessionsList] = useState<any[]>([]);
 
   // --- Auth Effect ---
   useEffect(() => {
@@ -330,6 +336,35 @@ export default function App() {
     const timeoutId = setTimeout(fetchNeighborhood, 1500);
     return () => clearTimeout(timeoutId);
   }, [location?.coords.latitude, location?.coords.longitude]);
+
+  // --- Sessions Fetching Effect ---
+  useEffect(() => {
+    if (!isAuthReady || !user || !isViewingSessionsList) {
+      setSessionsList([]);
+      return;
+    }
+
+    const q = query(
+      collection(db, 'sessions'),
+      where('userId', '==', user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const newSessions: any[] = [];
+        snapshot.forEach((doc) => {
+          newSessions.push({ id: doc.id, ...doc.data() });
+        });
+        newSessions.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+        setSessionsList(newSessions);
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'sessions');
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user, isAuthReady, isViewingSessionsList]);
 
   // --- Data Fetching Effect ---
   useEffect(() => {
@@ -527,13 +562,66 @@ export default function App() {
     }
   }, [pendingCounts, isSaving]);
 
+  const handleExportSessionsCSV = () => {
+    if (sessionsList.length === 0) return;
+
+    const headers = ['Neighborhood', 'Purpose', 'Start Time', 'End Time', 'Total Counts', 'Session ID'];
+    const csvRows = [
+      headers.join(','),
+      ...sessionsList.map(s => [
+        `"${s.neighborhood || ''}"`,
+        `"${s.purpose || ''}"`,
+        `"${new Date(s.startTime).toLocaleString()}"`,
+        `"${new Date(s.endTime).toLocaleString()}"`,
+        s.totalCounts,
+        s.sessionId
+      ].join(','))
+    ];
+
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `traffic_sessions_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // --- Start New Session ---
   const handleStartNewSession = async () => {
     if (pendingCounts.length > 0) {
       await handleSync();
     }
     setSessionId(crypto.randomUUID());
+    setSessionStartTime(new Date());
     setIsSessionActive(true);
+  };
+
+  // --- End Session ---
+  const handleEndSession = async () => {
+    await handleSync();
+    setIsSessionActive(false);
+    setShowEndSessionScreen(true);
+    
+    if (user && sessionStartTime) {
+      const sessionRecord = {
+        sessionId,
+        userId: user.uid,
+        startTime: sessionStartTime.toISOString(),
+        endTime: new Date().toISOString(),
+        neighborhood: selectedNeighborhood || null,
+        purpose: purpose || null,
+        totalCounts: counts.length + pendingCounts.length
+      };
+      
+      try {
+        await setDoc(doc(db, 'sessions', sessionId), sessionRecord);
+      } catch (error) {
+        handleFirestoreError(error, OperationType.WRITE, 'sessions');
+      }
+    }
   };
 
   // --- Keyboard Listener for Spacebar Sync ---
@@ -642,6 +730,7 @@ export default function App() {
               onClick={() => {
                 setShowEndSessionScreen(false);
                 setSessionId(crypto.randomUUID());
+                setSessionStartTime(null);
                 setCounts([]);
                 setPendingCounts([]);
                 setPurpose('');
@@ -652,6 +741,65 @@ export default function App() {
               Start New Session
             </button>
           </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isViewingSessionsList) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
+        <header className="bg-zinc-900 border-b border-zinc-800 px-4 py-4 flex items-center justify-between z-10 shrink-0">
+          <h1 className="font-bold text-lg tracking-tight">Review Sessions</h1>
+          <button 
+            onClick={() => window.location.href = window.location.origin}
+            className="text-sm text-zinc-400 hover:text-white transition-colors"
+          >
+            Back
+          </button>
+        </header>
+
+        <main className="flex-1 p-4 flex flex-col gap-4 max-w-md mx-auto w-full overflow-y-auto">
+          {sessionsList.length > 0 && (
+            <button
+              onClick={handleExportSessionsCSV}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 mb-2"
+            >
+              <Download size={18} />
+              Export Sessions Summary (CSV)
+            </button>
+          )}
+          {sessionsList.length === 0 ? (
+            <div className="text-center text-zinc-500 mt-10">
+              No sessions found.
+            </div>
+          ) : (
+            sessionsList.map(session => (
+              <div key={session.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col gap-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-white">{session.neighborhood || 'Unknown Neighborhood'}</h3>
+                    <p className="text-sm text-zinc-400">{session.purpose || 'No purpose specified'}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-indigo-400">{session.totalCounts}</div>
+                    <div className="text-xs text-zinc-500">counts</div>
+                  </div>
+                </div>
+                <div className="text-xs text-zinc-500 mt-2">
+                  {new Date(session.startTime).toLocaleString()} - {new Date(session.endTime).toLocaleTimeString()}
+                </div>
+                <button
+                  onClick={() => {
+                    window.location.href = `?sessionId=${session.sessionId}`;
+                  }}
+                  className="mt-2 w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  View Details & Export
+                </button>
+              </div>
+            ))
+          )}
         </main>
       </div>
     );
@@ -673,7 +821,17 @@ export default function App() {
 
         <main className="flex-1 p-6 flex flex-col gap-6 max-w-md mx-auto w-full">
           <button
-            onClick={() => setIsSessionActive(true)}
+            onClick={() => window.location.href = '?review=true'}
+            className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            Review Past Sessions
+          </button>
+
+          <button
+            onClick={() => {
+              if (!sessionStartTime) setSessionStartTime(new Date());
+              setIsSessionActive(true);
+            }}
             disabled={!location}
             className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-zinc-800 disabled:text-zinc-500 text-zinc-950 font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
@@ -761,25 +919,31 @@ export default function App() {
         <div className="flex items-center gap-3">
           {!isViewingShared && (
             <button 
-              onClick={() => {
-                handleSync();
-                setIsSessionActive(false);
-                setShowEndSessionScreen(true);
-              }}
+              onClick={handleEndSession}
               className="text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-full transition-colors"
             >
               End Session
             </button>
           )}
           {isViewingShared && (
-            <button 
-              onClick={() => {
-                window.location.href = window.location.origin;
-              }}
-              className="text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-full transition-colors"
-            >
-              Start New Session
-            </button>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => {
+                  window.location.href = window.location.origin + '?review=true';
+                }}
+                className="text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-full transition-colors"
+              >
+                Back to List
+              </button>
+              <button 
+                onClick={() => {
+                  window.location.href = window.location.origin;
+                }}
+                className="text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-full transition-colors"
+              >
+                Start New Session
+              </button>
+            </div>
           )}
           <div className="flex bg-zinc-800 rounded-full p-0.5">
             {!isViewingShared && (

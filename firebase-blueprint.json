@@ -55,6 +55,44 @@
         }
       },
       "required": ["type", "side", "latitude", "longitude", "accuracy", "timestamp", "userId"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A traffic counting session.",
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "The ID of the session."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who recorded the session."
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session started."
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session ended."
+        },
+        "neighborhood": {
+          "type": "string",
+          "description": "The neighborhood where the session was recorded."
+        },
+        "purpose": {
+          "type": "string",
+          "description": "The purpose of the session."
+        },
+        "totalCounts": {
+          "type": "number",
+          "description": "The total number of counts recorded in the session."
+        }
+      },
+      "required": ["sessionId", "userId", "startTime", "endTime", "totalCounts"]
     }
   },
   "firestore": {
@@ -63,6 +101,12 @@
         "$ref": "#/entities/VehicleCount"
       },
       "description": "Collection of all vehicle counts."
+    },
+    "/sessions/{sessionId}": {
+      "schema": {
+        "$ref": "#/entities/Session"
+      },
+      "description": "Collection of all traffic counting sessions."
     }
   }
 }
