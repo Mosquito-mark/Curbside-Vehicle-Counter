@@ -7,7 +7,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["car", "truck", "dumpster", "commercial_truck"],
+          "enum": ["car", "truck", "dumpster", "commercial_truck", "construction_start", "construction_stop"],
           "description": "The type of vehicle counted."
         },
         "side": {

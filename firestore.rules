@@ -60,7 +60,7 @@ service cloud.firestore {
 
     function isValidCount(data) {
       return hasOnlyAllowedFields(['type', 'side', 'latitude', 'longitude', 'accuracy', 'timestamp', 'userId', 'neighborhood', 'purpose', 'sessionDate', 'sessionId']) &&
-             data.type in ['car', 'truck', 'dumpster', 'commercial_truck'] &&
+             data.type in ['car', 'truck', 'dumpster', 'commercial_truck', 'construction_start', 'construction_stop'] &&
              data.side in ['left', 'right'] &&
              data.latitude is number &&
              data.longitude is number &&

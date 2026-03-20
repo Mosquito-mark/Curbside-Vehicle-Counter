@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { collection, addDoc, query, where, onSnapshot, orderBy, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { auth, db, loginWithGoogle, logout } from './firebase';
-import { Car, Truck, MapPin, MapPinOff, LogIn, LogOut, AlertCircle, Trash2, Package, Download, Mail } from 'lucide-react';
+import { Car, Truck, MapPin, MapPinOff, LogIn, LogOut, AlertCircle, Trash2, Package, Download, Mail, HardHat, Play, Square } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -646,6 +646,8 @@ export default function App() {
   const totalTrucks = allCounts.filter(c => c.type === 'truck').length;
   const totalDumpsters = allCounts.filter(c => c.type === 'dumpster').length;
   const totalCommTrucks = allCounts.filter(c => c.type === 'commercial_truck').length;
+  const totalRoadStart = allCounts.filter(c => c.type === 'construction_start').length;
+  const totalRoadStop = allCounts.filter(c => c.type === 'construction_stop').length;
   const leftSideCount = allCounts.filter(c => c.side === 'left').length;
   const rightSideCount = allCounts.filter(c => c.side === 'right').length;
 
@@ -661,7 +663,7 @@ export default function App() {
       Right: allCounts.filter(c => c.type === 'truck' && c.side === 'right').length,
     },
     {
-      name: 'Dumpster',
+      name: 'OSCAM - Immovable',
       Left: allCounts.filter(c => c.type === 'dumpster' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'dumpster' && c.side === 'right').length,
     },
@@ -669,6 +671,16 @@ export default function App() {
       name: 'Comm. Truck',
       Left: allCounts.filter(c => c.type === 'commercial_truck' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'commercial_truck' && c.side === 'right').length,
+    },
+    {
+      name: 'Road Start',
+      Left: allCounts.filter(c => c.type === 'construction_start' && c.side === 'left').length,
+      Right: allCounts.filter(c => c.type === 'construction_start' && c.side === 'right').length,
+    },
+    {
+      name: 'Road Stop',
+      Left: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'left').length,
+      Right: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'right').length,
     },
   ];
 
@@ -1002,7 +1014,7 @@ export default function App() {
       )}
 
       {/* --- Stats Summary --- */}
-      <div className="px-4 py-3 grid grid-cols-3 md:grid-cols-6 gap-2 text-center shrink-0 border-b border-zinc-800/50 bg-zinc-900/50">
+      <div className="px-4 py-3 grid grid-cols-4 md:grid-cols-8 gap-2 text-center shrink-0 border-b border-zinc-800/50 bg-zinc-900/50">
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
           <div className="text-xs text-zinc-500 mb-1">Cars</div>
           <div className="font-mono text-lg">{totalCars}</div>
@@ -1012,12 +1024,20 @@ export default function App() {
           <div className="font-mono text-lg">{totalTrucks}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Dumpsters</div>
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">OSCAM Immovable</div>
           <div className="font-mono text-lg">{totalDumpsters}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Comm. Trucks</div>
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Comm. Trucks</div>
           <div className="font-mono text-lg">{totalCommTrucks}</div>
+        </div>
+        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Road Start</div>
+          <div className="font-mono text-lg">{totalRoadStart}</div>
+        </div>
+        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Road Stop</div>
+          <div className="font-mono text-lg">{totalRoadStop}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
           <div className="text-xs text-zinc-500 mb-1">Left</div>
@@ -1087,7 +1107,7 @@ export default function App() {
               )}
             >
               <Trash2 className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">DUMPSTER</span>
+              <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
             </button>
 
             <button
@@ -1152,7 +1172,7 @@ export default function App() {
               )}
             >
               <Trash2 className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">DUMPSTER</span>
+              <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
             </button>
 
             <button
@@ -1172,6 +1192,66 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* --- Construction Controls --- */}
+      <div className="bg-zinc-900 border-t border-zinc-800 p-2 sm:p-4 shrink-0 flex flex-row gap-2 sm:gap-4 h-24 sm:h-32">
+        <button
+          onClick={() => handleTap('left', 'construction_start')}
+          disabled={!location}
+          className={cn(
+            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
+            lastTap?.side === 'left' && lastTap?.type === 'construction_start'
+              ? "border-amber-300 bg-amber-400 text-white scale-95"
+              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+          )}
+        >
+          <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>START L</span>
+        </button>
+        <button
+          onClick={() => handleTap('left', 'construction_stop')}
+          disabled={!location}
+          className={cn(
+            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
+            lastTap?.side === 'left' && lastTap?.type === 'construction_stop'
+              ? "border-amber-300 bg-amber-400 text-white scale-95"
+              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+          )}
+        >
+          <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>STOP L</span>
+        </button>
+        <button
+          onClick={() => handleTap('right', 'construction_start')}
+          disabled={!location}
+          className={cn(
+            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
+            lastTap?.side === 'right' && lastTap?.type === 'construction_start'
+              ? "border-amber-300 bg-amber-400 text-white scale-95"
+              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+          )}
+        >
+          <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>START R</span>
+        </button>
+        <button
+          onClick={() => handleTap('right', 'construction_stop')}
+          disabled={!location}
+          className={cn(
+            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
+            lastTap?.side === 'right' && lastTap?.type === 'construction_stop'
+              ? "border-amber-300 bg-amber-400 text-white scale-95"
+              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+          )}
+        >
+          <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>STOP R</span>
+        </button>
+      </div>
 
       {/* --- Sync Button --- */}
       <div className="bg-zinc-900 border-t border-zinc-800 p-4 shrink-0">
