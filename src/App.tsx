@@ -14,7 +14,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- Types ---
-type VehicleType = 'car' | 'truck' | 'dumpster' | 'commercial_truck';
+type VehicleType = 'car' | 'truck' | 'dumpster' | 'commercial_truck' | 'construction_start' | 'construction_stop';
 type StreetSide = 'left' | 'right';
 
 interface CountRecord {
@@ -673,12 +673,12 @@ export default function App() {
       Right: allCounts.filter(c => c.type === 'commercial_truck' && c.side === 'right').length,
     },
     {
-      name: 'Road Start',
+      name: 'Road Construction Start',
       Left: allCounts.filter(c => c.type === 'construction_start' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'construction_start' && c.side === 'right').length,
     },
     {
-      name: 'Road Stop',
+      name: 'Road Construction Stop',
       Left: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'right').length,
     },
@@ -1032,11 +1032,11 @@ export default function App() {
           <div className="font-mono text-lg">{totalCommTrucks}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Road Start</div>
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1 leading-tight">Road Construction Start</div>
           <div className="font-mono text-lg">{totalRoadStart}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Road Stop</div>
+          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1 leading-tight">Road Construction Stop</div>
           <div className="font-mono text-lg">{totalRoadStop}</div>
         </div>
         <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
@@ -1207,7 +1207,7 @@ export default function App() {
           )}
         >
           <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>START L</span>
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Start L</span>
         </button>
         <button
           onClick={() => handleTap('left', 'construction_stop')}
@@ -1221,7 +1221,7 @@ export default function App() {
           )}
         >
           <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>STOP L</span>
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Stop L</span>
         </button>
         <button
           onClick={() => handleTap('right', 'construction_start')}
@@ -1235,7 +1235,7 @@ export default function App() {
           )}
         >
           <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>START R</span>
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Start R</span>
         </button>
         <button
           onClick={() => handleTap('right', 'construction_stop')}
@@ -1249,7 +1249,7 @@ export default function App() {
           )}
         >
           <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">ROAD<br/>STOP R</span>
+          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Stop R</span>
         </button>
       </div>
 
