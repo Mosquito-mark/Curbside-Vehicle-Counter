@@ -673,12 +673,12 @@ export default function App() {
       Right: allCounts.filter(c => c.type === 'commercial_truck' && c.side === 'right').length,
     },
     {
-      name: 'Road Construction Start',
+      name: 'Road Start',
       Left: allCounts.filter(c => c.type === 'construction_start' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'construction_start' && c.side === 'right').length,
     },
     {
-      name: 'Road Construction Stop',
+      name: 'Road Stop',
       Left: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'left').length,
       Right: allCounts.filter(c => c.type === 'construction_stop' && c.side === 'right').length,
     },
@@ -850,18 +850,18 @@ export default function App() {
             Return to current session
           </button>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex flex-col gap-5">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 sm:p-5 flex flex-col gap-3 sm:gap-4">
             
             {/* Neighborhood */}
             <div>
-              <label htmlFor="neighborhood" className="block text-sm font-medium text-zinc-300 mb-1.5">
+              <label htmlFor="neighborhood" className="block text-xs font-medium text-zinc-300 mb-1">
                 Neighborhood (Auto-detected via GPS)
               </label>
               <select
                 id="neighborhood"
                 value={selectedNeighborhood}
                 onChange={(e) => setSelectedNeighborhood(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-700 text-white text-base rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-3"
+                className="w-full bg-zinc-950 border border-zinc-700 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2"
               >
                 <option value="">None selected</option>
                 {availableNeighborhoods.map(n => (
@@ -872,7 +872,7 @@ export default function App() {
 
             {/* Date / Time */}
             <div>
-              <label htmlFor="sessionDate" className="block text-sm font-medium text-zinc-300 mb-1.5">
+              <label htmlFor="sessionDate" className="block text-xs font-medium text-zinc-300 mb-1">
                 Date / Time
               </label>
               <div className="w-full">
@@ -885,7 +885,7 @@ export default function App() {
                   timeIntervals={15}
                   timeCaption="Time"
                   dateFormat="MMMM d, yyyy h:mm aa"
-                  className="w-full bg-zinc-950 border border-zinc-700 text-white text-base rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-3"
+                  className="w-full bg-zinc-950 border border-zinc-700 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2"
                   wrapperClassName="w-full"
                 />
               </div>
@@ -893,14 +893,14 @@ export default function App() {
 
             {/* Purpose */}
             <div>
-              <label htmlFor="purpose" className="block text-sm font-medium text-zinc-300 mb-1.5">
+              <label htmlFor="purpose" className="block text-xs font-medium text-zinc-300 mb-1">
                 Purpose of the count
               </label>
               <select
                 id="purpose"
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-700 text-white text-base rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-3"
+                className="w-full bg-zinc-950 border border-zinc-700 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2"
               >
                 <option value="">Select a purpose...</option>
                 <option value="Business Improvement Area">Business Improvement Area</option>
@@ -914,7 +914,7 @@ export default function App() {
           <button
             onClick={handleStartNewSession}
             disabled={!location || isSaving}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 mt-auto"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 mt-auto"
           >
             {isSaving ? "Saving..." : location ? "Start New Session" : "Waiting for GPS..."}
           </button>
@@ -924,10 +924,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col overflow-hidden fixed inset-0">
+    <div className="h-screen bg-zinc-950 text-zinc-100 flex flex-col overflow-hidden fixed inset-0">
       
       {/* --- Header / Status Bar --- */}
-      <header className="bg-zinc-900 border-b border-zinc-800 px-4 py-3 flex items-center justify-between z-10 shrink-0">
+      <header className="bg-zinc-900 border-b border-zinc-800 px-4 py-2 landscape:py-1 flex items-center justify-between z-10 shrink-0">
         <div className="flex items-center gap-3">
           {!isViewingShared && (
             <button 
@@ -1014,38 +1014,38 @@ export default function App() {
       )}
 
       {/* --- Stats Summary --- */}
-      <div className="px-4 py-3 grid grid-cols-4 md:grid-cols-8 gap-2 text-center shrink-0 border-b border-zinc-800/50 bg-zinc-900/50">
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Cars</div>
-          <div className="font-mono text-lg">{totalCars}</div>
+      <div className="px-2 py-1 landscape:py-0.5 grid grid-cols-4 md:grid-cols-8 landscape:grid-cols-8 gap-1 text-center shrink-0 border-b border-zinc-800/50 bg-zinc-900/50">
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Cars</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalCars}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Trucks</div>
-          <div className="font-mono text-lg">{totalTrucks}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Trucks</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalTrucks}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">OSCAM Immovable</div>
-          <div className="font-mono text-lg">{totalDumpsters}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[9px] sm:text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">OSCAM Immov.</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalDumpsters}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1">Comm. Trucks</div>
-          <div className="font-mono text-lg">{totalCommTrucks}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[9px] sm:text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Comm. Trucks</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalCommTrucks}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1 leading-tight">Road Construction Start</div>
-          <div className="font-mono text-lg">{totalRoadStart}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[9px] sm:text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Road Start</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalRoadStart}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-[10px] sm:text-xs text-zinc-500 mb-1 leading-tight">Road Construction Stop</div>
-          <div className="font-mono text-lg">{totalRoadStop}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[9px] sm:text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Road Stop</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{totalRoadStop}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Left</div>
-          <div className="font-mono text-lg">{leftSideCount}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Left</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{leftSideCount}</div>
         </div>
-        <div className="bg-zinc-900 rounded-lg p-2 border border-zinc-800">
-          <div className="text-xs text-zinc-500 mb-1">Right</div>
-          <div className="font-mono text-lg">{rightSideCount}</div>
+        <div className="bg-zinc-900 rounded p-1 landscape:p-0.5 border border-zinc-800">
+          <div className="text-[10px] landscape:text-[8px] text-zinc-500 leading-none mb-0.5">Right</div>
+          <div className="font-mono text-sm sm:text-base landscape:text-xs leading-none">{rightSideCount}</div>
         </div>
       </div>
 
@@ -1062,208 +1062,220 @@ export default function App() {
 
         <div className="flex-1 flex">
           {/* Left Side Controls */}
-          <div className="flex-1 flex flex-col p-2 sm:p-4 gap-2 sm:gap-4 border-r border-dashed border-zinc-800">
-            <div className="text-center text-zinc-500 font-medium uppercase tracking-widest text-xs sm:text-sm mb-1 sm:mb-2">Left Side</div>
+          <div className="flex-1 flex flex-col p-1 sm:p-2 landscape:p-0.5 gap-1 sm:gap-2 landscape:gap-0.5 border-r border-dashed border-zinc-800 min-h-0">
+            <div className="text-center text-zinc-500 font-medium uppercase tracking-widest text-[10px] sm:text-xs landscape:text-[8px] landscape:leading-none">Left Side</div>
             
             <button
               onClick={() => handleTap('left', 'car')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'left' && lastTap?.type === 'car'
                   ? "border-red-300 bg-red-400 text-white scale-95"
                   : "border-red-600 bg-red-500 text-white active:scale-95 active:bg-red-600 shadow-lg shadow-red-500/20"
               )}
             >
-              <Car className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">CAR</span>
+              <Car className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[10px] sm:text-base landscape:text-[9px]">CAR</span>
             </button>
 
             <button
               onClick={() => handleTap('left', 'truck')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'left' && lastTap?.type === 'truck'
                   ? "border-orange-300 bg-orange-400 text-white scale-95"
                   : "border-orange-600 bg-orange-500 text-white active:scale-95 active:bg-orange-600 shadow-lg shadow-orange-500/20"
               )}
             >
-              <Truck className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">TRUCK</span>
+              <Truck className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[10px] sm:text-base landscape:text-[9px]">TRUCK</span>
             </button>
 
             <button
               onClick={() => handleTap('left', 'dumpster')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'left' && lastTap?.type === 'dumpster'
                   ? "border-blue-300 bg-blue-400 text-white scale-95"
                   : "border-blue-600 bg-blue-500 text-white active:scale-95 active:bg-blue-600 shadow-lg shadow-blue-500/20"
               )}
             >
-              <Trash2 className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
+              <Trash2 className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[8px] sm:text-[10px] landscape:text-[7px] text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
             </button>
 
             <button
               onClick={() => handleTap('left', 'commercial_truck')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'left' && lastTap?.type === 'commercial_truck'
                   ? "border-purple-300 bg-purple-400 text-white scale-95"
                   : "border-purple-600 bg-purple-500 text-white active:scale-95 active:bg-purple-600 shadow-lg shadow-purple-500/20"
               )}
             >
-              <Package className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-sm text-center px-1 leading-tight">COMM.<br/>TRUCK</span>
+              <Package className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[8px] sm:text-[10px] landscape:text-[7px] text-center px-1 leading-tight">COMM.<br/>TRUCK</span>
             </button>
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex-1 flex flex-col p-2 sm:p-4 gap-2 sm:gap-4">
-            <div className="text-center text-zinc-500 font-medium uppercase tracking-widest text-xs sm:text-sm mb-1 sm:mb-2">Right Side</div>
+          <div className="flex-1 flex flex-col p-1 sm:p-2 landscape:p-0.5 gap-1 sm:gap-2 landscape:gap-0.5 min-h-0">
+            <div className="text-center text-zinc-500 font-medium uppercase tracking-widest text-[10px] sm:text-xs landscape:text-[8px] landscape:leading-none">Right Side</div>
             
             <button
               onClick={() => handleTap('right', 'car')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'right' && lastTap?.type === 'car'
                   ? "border-red-300 bg-red-400 text-white scale-95"
                   : "border-red-600 bg-red-500 text-white active:scale-95 active:bg-red-600 shadow-lg shadow-red-500/20"
               )}
             >
-              <Car className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">CAR</span>
+              <Car className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[10px] sm:text-base landscape:text-[9px]">CAR</span>
             </button>
 
             <button
               onClick={() => handleTap('right', 'truck')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'right' && lastTap?.type === 'truck'
                   ? "border-orange-300 bg-orange-400 text-white scale-95"
                   : "border-orange-600 bg-orange-500 text-white active:scale-95 active:bg-orange-600 shadow-lg shadow-orange-500/20"
               )}
             >
-              <Truck className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-lg">TRUCK</span>
+              <Truck className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[10px] sm:text-base landscape:text-[9px]">TRUCK</span>
             </button>
 
             <button
               onClick={() => handleTap('right', 'dumpster')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'right' && lastTap?.type === 'dumpster'
                   ? "border-blue-300 bg-blue-400 text-white scale-95"
                   : "border-blue-600 bg-blue-500 text-white active:scale-95 active:bg-blue-600 shadow-lg shadow-blue-500/20"
               )}
             >
-              <Trash2 className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
+              <Trash2 className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[8px] sm:text-[10px] landscape:text-[7px] text-center px-1 leading-tight">OSCAM<br/>IMMOVABLE</span>
             </button>
 
             <button
               onClick={() => handleTap('right', 'commercial_truck')}
               disabled={!location}
               className={cn(
-                "flex-1 rounded-2xl sm:rounded-3xl border-2 flex flex-col items-center justify-center gap-1 sm:gap-3 transition-all select-none touch-manipulation",
+                "flex-1 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation min-h-0",
                 !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
                 lastTap?.side === 'right' && lastTap?.type === 'commercial_truck'
                   ? "border-purple-300 bg-purple-400 text-white scale-95"
                   : "border-purple-600 bg-purple-500 text-white active:scale-95 active:bg-purple-600 shadow-lg shadow-purple-500/20"
               )}
             >
-              <Package className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={1.5} />
-              <span className="font-bold text-xs sm:text-sm text-center px-1 leading-tight">COMM.<br/>TRUCK</span>
+              <Package className="w-6 h-6 sm:w-10 sm:h-10 landscape:w-5 landscape:h-5" strokeWidth={1.5} />
+              <span className="font-bold text-[8px] sm:text-[10px] landscape:text-[7px] text-center px-1 leading-tight">COMM.<br/>TRUCK</span>
             </button>
           </div>
         </div>
       </main>
 
       {/* --- Construction Controls --- */}
-      <div className="bg-zinc-900 border-t border-zinc-800 p-2 sm:p-4 shrink-0 flex flex-row gap-2 sm:gap-4 h-24 sm:h-32">
+      <div className="bg-zinc-900 border-t border-zinc-800 p-1 sm:p-2 landscape:p-0.5 shrink-0 flex flex-row gap-1 sm:gap-2 landscape:gap-0.5 h-16 sm:h-20 landscape:h-10">
         <button
           onClick={() => handleTap('left', 'construction_start')}
           disabled={!location}
           className={cn(
-            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            "flex-1 rounded-lg border flex flex-col items-center justify-center transition-all select-none touch-manipulation relative overflow-hidden",
             !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
             lastTap?.side === 'left' && lastTap?.type === 'construction_start'
-              ? "border-amber-300 bg-amber-400 text-white scale-95"
-              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+              ? "border-white scale-95 ring-1 ring-yellow-400 ring-offset-1 ring-offset-zinc-900"
+              : "border-black shadow-lg shadow-yellow-500/20 active:scale-95"
           )}
+          style={location ? { background: 'repeating-linear-gradient(45deg, #facc15, #facc15 8px, #000 8px, #000 16px)' } : {}}
         >
-          <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Start L</span>
+          <div className="bg-yellow-400 px-1 py-0.5 landscape:py-0 rounded border border-black/20 shadow-sm z-10 flex flex-col items-center">
+            <Play className="w-3 h-3 sm:w-4 sm:h-4 landscape:w-2.5 landscape:h-2.5 text-black" strokeWidth={3} />
+            <span className="font-black text-[7px] sm:text-[8px] landscape:text-[6px] text-center leading-tight uppercase text-black">START L</span>
+          </div>
         </button>
         <button
           onClick={() => handleTap('left', 'construction_stop')}
           disabled={!location}
           className={cn(
-            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            "flex-1 rounded-lg border flex flex-col items-center justify-center transition-all select-none touch-manipulation relative overflow-hidden",
             !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
             lastTap?.side === 'left' && lastTap?.type === 'construction_stop'
-              ? "border-amber-300 bg-amber-400 text-white scale-95"
-              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+              ? "border-white scale-95 ring-1 ring-yellow-400 ring-offset-1 ring-offset-zinc-900"
+              : "border-black shadow-lg shadow-yellow-500/20 active:scale-95"
           )}
+          style={location ? { background: 'repeating-linear-gradient(45deg, #facc15, #facc15 8px, #000 8px, #000 16px)' } : {}}
         >
-          <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Stop L</span>
+          <div className="bg-yellow-400 px-1 py-0.5 landscape:py-0 rounded border border-black/20 shadow-sm z-10 flex flex-col items-center">
+            <Square className="w-3 h-3 sm:w-4 sm:h-4 landscape:w-2.5 landscape:h-2.5 text-black" strokeWidth={3} />
+            <span className="font-black text-[7px] sm:text-[8px] landscape:text-[6px] text-center leading-tight uppercase text-black">STOP L</span>
+          </div>
         </button>
         <button
           onClick={() => handleTap('right', 'construction_start')}
           disabled={!location}
           className={cn(
-            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            "flex-1 rounded-lg border flex flex-col items-center justify-center transition-all select-none touch-manipulation relative overflow-hidden",
             !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
             lastTap?.side === 'right' && lastTap?.type === 'construction_start'
-              ? "border-amber-300 bg-amber-400 text-white scale-95"
-              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+              ? "border-white scale-95 ring-1 ring-yellow-400 ring-offset-1 ring-offset-zinc-900"
+              : "border-black shadow-lg shadow-yellow-500/20 active:scale-95"
           )}
+          style={location ? { background: 'repeating-linear-gradient(45deg, #facc15, #facc15 8px, #000 8px, #000 16px)' } : {}}
         >
-          <Play className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Start R</span>
+          <div className="bg-yellow-400 px-1 py-0.5 landscape:py-0 rounded border border-black/20 shadow-sm z-10 flex flex-col items-center">
+            <Play className="w-3 h-3 sm:w-4 sm:h-4 landscape:w-2.5 landscape:h-2.5 text-black" strokeWidth={3} />
+            <span className="font-black text-[7px] sm:text-[8px] landscape:text-[6px] text-center leading-tight uppercase text-black">START R</span>
+          </div>
         </button>
         <button
           onClick={() => handleTap('right', 'construction_stop')}
           disabled={!location}
           className={cn(
-            "flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation",
+            "flex-1 rounded-lg border flex flex-col items-center justify-center transition-all select-none touch-manipulation relative overflow-hidden",
             !location ? "opacity-50 cursor-not-allowed border-zinc-800 bg-zinc-900/50 text-zinc-600" :
             lastTap?.side === 'right' && lastTap?.type === 'construction_stop'
-              ? "border-amber-300 bg-amber-400 text-white scale-95"
-              : "border-amber-600 bg-amber-500 text-white active:scale-95 active:bg-amber-600 shadow-lg shadow-amber-500/20"
+              ? "border-white scale-95 ring-1 ring-yellow-400 ring-offset-1 ring-offset-zinc-900"
+              : "border-black shadow-lg shadow-yellow-500/20 active:scale-95"
           )}
+          style={location ? { background: 'repeating-linear-gradient(45deg, #facc15, #facc15 8px, #000 8px, #000 16px)' } : {}}
         >
-          <Square className="w-5 h-5 sm:w-8 sm:h-8" strokeWidth={2} />
-          <span className="font-bold text-[10px] sm:text-xs text-center px-1 leading-tight text-zinc-950">Road Construction<br/>Stop R</span>
+          <div className="bg-yellow-400 px-1 py-0.5 landscape:py-0 rounded border border-black/20 shadow-sm z-10 flex flex-col items-center">
+            <Square className="w-3 h-3 sm:w-4 sm:h-4 landscape:w-2.5 landscape:h-2.5 text-black" strokeWidth={3} />
+            <span className="font-black text-[7px] sm:text-[8px] landscape:text-[6px] text-center leading-tight uppercase text-black">STOP R</span>
+          </div>
         </button>
       </div>
 
       {/* --- Sync Button --- */}
-      <div className="bg-zinc-900 border-t border-zinc-800 p-4 shrink-0">
+      <div className="bg-zinc-900 border-t border-zinc-800 p-2 landscape:p-1 shrink-0">
         <button
           onClick={handleSync}
           disabled={isSaving}
           className={cn(
-            "w-full font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 active:scale-[0.98]",
+            "w-full font-bold py-2 px-4 landscape:py-1 rounded-lg transition-all flex items-center justify-center gap-2 text-base landscape:text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 active:scale-[0.98]",
             isSaving && "opacity-50 cursor-not-allowed"
           )}
         >
-          {isSaving ? "Syncing..." : `Sync ${pendingCounts.length} Pending Count${pendingCounts.length === 1 ? '' : 's'} (Space)`}
+          {isSaving ? "Syncing..." : `Sync ${pendingCounts.length} Pending (Space)`}
         </button>
       </div>
         </>
